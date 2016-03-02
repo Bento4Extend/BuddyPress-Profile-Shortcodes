@@ -1,122 +1,1 @@
-<?php
-if(!class_exists('Bpcs_shortcodes')):
-    class Bpcs_shortcodes{
-        function Bpcs_shortcodes(){
-            add_shortcode('bp_profile_displayname', array($this,'bpcs_bp_profile_displayname'));
-            add_shortcode('bp_profile_email', array($this,'bpcs_bp_profile_email'));
-            add_shortcode('bp_profile_username', array($this,'bpcs_bp_profile_username'));
-            add_shortcode('bp_profile_gravatar', array($this,'bpcs_bp_profile_gravatar'));
-            add_shortcode('bp_profile_gravatar_url', array($this,'bpcs_bp_profile_gravatar_url'));
-            add_shortcode('bp_profile_url', array($this,'bpcs_bp_profile_url'));
-            add_shortcode('bp_profile_edit_url', array($this,'bpcs_bp_profile_edit_url'));
-            add_shortcode('bp_profile_field', array($this,'bpcs_bp_profile_field'));
-        }
-        function bpcs_bp_profile_displayname($atts){
-            extract(shortcode_atts(array(
-                "user_id"=> 0
-            ),$atts));
-            global $wpdb,$bp;
-            if( is_string($user_id) ) $user_id = $wpdb->get_var("SELECT ID FROM ".$wpdb->users." WHERE user_login='$user_id'") ;
-            elseif($user_id == 0) $user_id = (isset($bp->loggedin_user->userdata->ID))? $bp->loggedin_user->userdata->ID : get_current_user_id() ;
-            $user = get_userdata( $user_id );
-            return $user->data->display_name;
-        }
-
-        function bpcs_bp_profile_email($atts){
-            extract(shortcode_atts(array(
-                "user_id"=> 0
-            ),$atts));
-            global $wpdb,$bp;
-            if( is_string($user_id) ) $user_id = $wpdb->get_var("SELECT ID FROM ".$wpdb->users." WHERE user_login='$user_id'") ;
-            elseif($user_id == 0) $user_id = (isset($bp->loggedin_user->userdata->ID))? $bp->loggedin_user->userdata->ID : get_current_user_id() ;
-            $user = get_userdata( $user_id );
-            return $user->data->user_email;
-        }
-
-        function bpcs_bp_profile_username($atts){
-            extract(shortcode_atts(array(
-                "user_id"=> 0
-            ),$atts));
-            global $wpdb,$bp;
-            if( is_string($user_id) ) $user_id = $wpdb->get_var("SELECT ID FROM ".$wpdb->users." WHERE user_login='$user_id'") ;
-            elseif($user_id == 0) $user_id = (isset($bp->loggedin_user->userdata->ID))? $bp->loggedin_user->userdata->ID : get_current_user_id() ;
-            $user = get_userdata( $user_id );
-            return $user->data->user_login;
-        }
-
-        function bpcs_bp_profile_gravatar($atts){
-            extract(shortcode_atts(array(
-                "user_id"=> 0,
-                "dimension"=> 90
-            ),$atts));
-            global $wpdb,$bp;
-            if( is_string($user_id) ) $user_id = $wpdb->get_var("SELECT ID FROM ".$wpdb->users." WHERE user_login='$user_id'") ;
-            elseif($user_id == 0) $user_id = (isset($bp->loggedin_user->userdata->ID))? $bp->loggedin_user->userdata->ID : get_current_user_id() ;
-            return get_avatar( $user_id, $dimension );
-        }
-
-        function bpcs_bp_profile_gravatar_url($atts){
-            extract(shortcode_atts(array(
-                "user_id"=> 0
-            ),$atts));
-            global $wpdb,$bp;
-            if( is_string($user_id) ) $user_id = $wpdb->get_var("SELECT ID FROM ".$wpdb->users." WHERE user_login='$user_id'") ;
-            elseif($user_id == 0) $user_id = (isset($bp->loggedin_user->userdata->ID))? $bp->loggedin_user->userdata->ID : get_current_user_id() ;
-            $user = get_userdata( $user_id );
-            $email = $user->data->user_email;
-            $hash = md5( strtolower( trim ( $email ) ) );
-            return 'http://gravatar.com/avatar/' . $hash;
-        }
-
-        function bpcs_bp_profile_url($atts){
-            extract(shortcode_atts(array(
-                "user_id"=> 0
-            ),$atts));
-            global $wpdb,$bp;
-            if( is_string($user_id) ) $user_id = $wpdb->get_var("SELECT ID FROM ".$wpdb->users." WHERE user_login='$user_id'") ;
-            elseif($user_id == 0) $user_id = (isset($bp->loggedin_user->userdata->ID))? $bp->loggedin_user->userdata->ID : get_current_user_id() ;
-            $user = get_userdata( $user_id );
-            return home_url().'/members/'.$user->data->user_login.'/profile/';
-        }
-
-        function bpcs_bp_profile_edit_url($atts){
-            extract(shortcode_atts(array(
-                "user_id"=> 0
-            ),$atts));
-            global $wpdb,$bp;
-            if( is_string($user_id) ) $user_id = $wpdb->get_var("SELECT ID FROM ".$wpdb->users." WHERE user_login='$user_id'") ;
-            elseif($user_id == 0) $user_id = (isset($bp->loggedin_user->userdata->ID))? $bp->loggedin_user->userdata->ID : get_current_user_id() ;
-            $user = get_userdata( $user_id );
-            return home_url().'/members/'.$user->data->user_login.'/profile/edit/';
-        }
-
-        function bpcs_bp_profile_field($atts){
-            extract(shortcode_atts(array(
-                "field"=> '',
-                "tab"  => 'Base',
-                "user_id" => 0,
-                "empty" => 'Empty Field',
-                "shortcode" => 0
-            ),$atts));
-            global $wpdb,$bp;
-            $prefix = $wpdb->prefix;
-            $grp = $wpdb->get_var("SELECT id FROM ".$prefix."bp_xprofile_groups WHERE name='$tab'");
-
-            if(empty($grp)){ return 'Tab Name is invalid';}
-            $fld = $wpdb->get_var("SELECT id FROM ".$prefix."bp_xprofile_fields WHERE name='$field' AND group_id=$grp");
-            if(empty($fld)) return 'Field Name is invalid';
-            if( is_string($user_id) ) $user_id = $wpdb->get_var("SELECT ID FROM ".$wpdb->users." WHERE user_login='$user_id'") ;
-            elseif($user_id == 0) $user_id = (isset($bp->loggedin_user->userdata->ID))? $bp->loggedin_user->userdata->ID : get_current_user_id() ;
-            $value = $wpdb->get_var("SELECT value FROM ".$prefix."bp_xprofile_data WHERE field_id=$fld AND user_id=$user_id");
-            if($wpdb->get_var("SELECT type FROM ".$prefix."bp_xprofile_fields WHERE id=$fld") == 'custom_area')
-                $value = $wpdb->get_var("SELECT name FROM ".$prefix."bp_xprofile_fields WHERE parent_id=$fld AND option_order=2");
-
-            $value = preg_replace(array("/\r\n/s", "/\n/s", "/\r/s"),'<br>',$value);
-            if($shortcode == 1) $value = do_shortcode($value);
-
-
-            if(empty($value)) return $empty;
-            return $value;
-        }
-    }
-endif;
+<?phpif(!class_exists('Bpcs_shortcodes')):		function bpcs_get_user_id($user_id = "-1"){			global $bp;			if ($user_id == "-1") {				$user_id = $bp->loggedin_user->userdata->ID;			}			if (!is_numeric($user_id)) {				$user = get_userdatabylogin($user_id);				if ($user == false) {					$user_id = $bp->loggedin_user->userdata->ID;				} else {					$user_id = $user->ID;				}			}			$user = get_userdata( $user_id );			if ($user == false) {				$user_id = $bp->loggedin_user->userdata->ID;			}			return $user_id;		}		function bpcs_show_url($atts, $function_name, $show_url = 'url', $url_type = 'profile', $dimension = ''){			global $wpdb,$bp;			$atts = shortcode_atts( array(				'limit' => -1,				'id'=>'',				'text'=>'',				'before'=>'',				'after'=>'',				'rel'=>'',				'target'=>'',				'style'=>'',				'class'=>'',				'attribute_id'=>'',				'title'=>'',				'dimension'=>$dimension,				'tabindex'=>'',				'attributes'=>'',				'show'=>$show_url,				'profile_page'=>$url_type,				'height'=>'',				'width'=>'',				'align'=>'',				'alt'=>'',				'size'=>'full',                'user_id'=> $bp->loggedin_user->userdata->ID,            ), $atts, $function_name );			$user_id = bpcs_get_user_id($atts['user_id']);			if($url_type == 'image') {				$attributes ='';					if($atts['style']!='')					$attributes .= 'style="'.$atts['style'].'" ';				if($atts['alt']!='')					$attributes .= 'alt="'.$atts['alt'].'" ';				if($atts['id']!='')					$attributes .= 'id="'.$atts['attribute_id'].'" ';				if($atts['align']!='')					$attributes .= 'align="'.$atts['align'].'" ';				if(is_numeric($atts['dimension'])) {					$attributes .= 'width="'.$atts['dimension'].'" height="'.$atts['dimension'].'" ';				} else {					if($atts['width']!='')						$attributes .= 'width="'.$atts['width'].'" ';					if($atts['height']!='')						$attributes .= 'height="'.$atts['height'].'" ';				}					$feat_image = bp_core_fetch_avatar (    array(  'item_id' => $user_id, // id of user for desired avatar            			'type'    => 'full',			            'html'   => FALSE     // FALSE = return url, TRUE (default) = return img html				    ) 				);	 				if($atts['show']=='url')					return $feat_image;					$img = '<img src="'.$feat_image.'" '.$attributes.' />';	 				return $img;			} else {				$url = bp_core_get_user_domain( $user_id ).$atts['profile_page'].'/';							$attributes ='';				if($atts['attribute_id']!='')					$attributes .= 'id="'.$atts['attribute_id'].'" ';					if($atts['class']!='')					$attributes .= 'class="'.$atts['class'].'" ';					if($atts['rel']!='')					$attributes .= 'rel="'.$atts['rel'].'" ';					if($atts['target']!='')					$attributes .= 'target="'.$atts['target'].'" ';					if($atts['style']!='')					$attributes .= 'style="'.$atts['style'].'" ';					if($atts['tabindex']!='')					$attributes .= 'tabindex="'.$atts['tabindex'].'"  ';					if($atts['title']!='')					$attributes .= 'title="'.$atts['title'].'" ';					if($atts['attributes']!='')					$attributes .= $atts['attributes'];					if($atts['text']=='no')				{					$link = '<a href="'.$url.'" '.$attributes.' >';					$output = $link;				}				else if ($atts['text']!='' && $atts['text']!='no')				{					$link = '<a href="'.$url.'" '.$attributes.' >'.$atts['text'].'</a>';					$output = $link;				}				else if($atts['text']=='' && $atts['show']=='url')					$output = $url;				else				{					$link = '<a href="'.$url.'" '.$attributes.' >'.$url.'</a>';					$output = $link;				}				return $atts['before'].$output.$atts['after'];						}		}		    class Bpcs_shortcodes{        function Bpcs_shortcodes(){            add_shortcode('bp_profile_displayname', array($this,'bpcs_bp_profile_displayname'));            add_shortcode('bp_profile_email', array($this,'bpcs_bp_profile_email'));            add_shortcode('bp_profile_username', array($this,'bpcs_bp_profile_username'));            add_shortcode('bp_profile_gravatar', array($this,'bpcs_bp_profile_gravatar'));            add_shortcode('bp_profile_gravatar_url', array($this,'bpcs_bp_profile_gravatar_url'));            add_shortcode('bp_profile_url', array($this,'bpcs_bp_profile_url'));            add_shortcode('bp_profile_edit_url', array($this,'bpcs_bp_profile_edit_url'));            add_shortcode('bp_profile_field', array($this,'bpcs_bp_profile_field'));        }        function bpcs_bp_profile_displayname($atts){            global $wpdb,$bp;            extract(shortcode_atts(array(                "user_id"=> $bp->loggedin_user->userdata->ID            ),$atts));			$new_user_id = bpcs_get_user_id($user_id);			return bp_core_get_user_displayname($new_user_id);        }        function bpcs_bp_profile_email($atts){            global $wpdb,$bp;            extract(shortcode_atts(array(                "user_id"=> $bp->loggedin_user->userdata->ID            ),$atts));			$user_id = bpcs_get_user_id($user_id);            return bp_core_get_user_email($user_id);        }        function bpcs_bp_profile_username($atts){            global $wpdb,$bp;            extract(shortcode_atts(array(                "user_id"=> $bp->loggedin_user->userdata->ID            ),$atts));			$user_id = bpcs_get_user_id($user_id);			$user = get_userdata($user_id);			return $user->user_login;        }        function bpcs_bp_profile_gravatar($atts){        	$hash = bpcs_show_url($atts,'bp_profile_gravatar','no','image','90');			return $hash;        }        function bpcs_bp_profile_gravatar_url($atts){			$hash = bpcs_show_url($atts,'bp_profile_gravatar_url','url','image','');			return $hash;        }        function bpcs_bp_profile_url($atts){        	$hash = bpcs_show_url($atts,'bp_profile_url','url','profile','');			return $hash;        }        function bpcs_bp_profile_edit_url($atts){			$hash = bpcs_show_url($atts,'bp_profile_edit_url','url','edit','');			return $hash;        }        function bpcs_bp_profile_field($atts){            global $wpdb,$bp;            extract(shortcode_atts(array(                "field"=> '',                "tab"  => 'Base',                "user_id" => $bp->loggedin_user->userdata->ID,                "empty" => '',                "shortcode" => 0            ),$atts));			$user_id = bpcs_get_user_id($user_id);            $prefix = $wpdb->prefix;            $grp = $wpdb->get_var("SELECT id FROM ".$prefix."bp_xprofile_groups WHERE name='$tab'");            if(empty($grp)){ return 'The tab name is invalid';}            $fld = $wpdb->get_var("SELECT id FROM ".$prefix."bp_xprofile_fields WHERE name='$field' AND group_id=$grp");            if(empty($fld)) return 'The field name is invalid';            if( is_string($user_id) ) $user_id = $wpdb->get_var("SELECT ID FROM ".$wpdb->users." WHERE user_login='$user_id'") ;            elseif($user_id == 0) $user_id = (isset($bp->loggedin_user->userdata->ID))? $bp->loggedin_user->userdata->ID : get_current_user_id() ;            $value = $wpdb->get_var("SELECT value FROM ".$prefix."bp_xprofile_data WHERE field_id=$fld AND user_id=$user_id");            if($wpdb->get_var("SELECT type FROM ".$prefix."bp_xprofile_fields WHERE id=$fld") == 'custom_area')                $value = $wpdb->get_var("SELECT name FROM ".$prefix."bp_xprofile_fields WHERE parent_id=$fld AND option_order=2");            $value = preg_replace(array("/\r\n/s", "/\n/s", "/\r/s"),'<br>',$value);            if($shortcode == 1) $value = do_shortcode($value);            if(empty($value)) return $empty;            return $value;        }    }endif;?>

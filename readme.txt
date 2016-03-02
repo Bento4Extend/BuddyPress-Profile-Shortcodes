@@ -1,11 +1,11 @@
-﻿=== BuddyPress Profile Shortcodes ===
+=== BuddyPress Profile Shortcodes ===
 Contributors: Bento4Extend, GICoder
 Donate link: http://Extend.BT4.ME/
 Tags: BuddyPress, shortcode, shortcodes, profile, social
 Requires at least: 3.6
 License: GNU/GPL 2
-Tested up to: 4.1
-Stable tag: 1.0
+Tested up to: 4.4.2
+Stable tag: 1.1
 
 Allows you to insert any information from either a specific user or the current user into anywhere on the site using shortcodes.
 
@@ -46,22 +46,28 @@ You can also have this work well with [BuddyPress Profile Custom Area](http://Ex
 
 * Will get the gravatar and display it.
 * Can use the "dimension" parameter to change the dimensions of the gravatar.
+* You can use a height or width parameter to define the height or width of it as an alternative.
 * The user_id parameter can be used optionally as well.
 
 **[bp_profile_gravatar_url]**
 
 * Will get the gravatar url.
 * The user_id parameter can be used optionally as well.
+* If you use show = no as a parameter it works similar to bp_profile_gravatar.
 
 **[bp_profile_url]**
 
 * Will get the url for where the user's profile is.
 * The user_id parameter can be used optionally as well.
+* IF you use show = no then it will show as a link.
+* You can use before = or after = parameters to define text to show before or after the link or before or after the text to add customizability.
+* This will accept the parameter “profile_page” to have the url for any page for the profile specified. Ie. “settings” will go to the settings page.
 
 **[bp_profile_edit_url]**
 
 * Will get the url for editing the user's buddypress profile.
 * The user_id parameter can be used optionally as well.
+* You can use before = or after = parameters to define text to show before or after the link or before or after the text to add customizability.
 
 == Installation ==
 
@@ -77,6 +83,14 @@ Feel free to contact our support through [Extend.BT4.ME](http://Extend.BT4.ME/ "
 
 == Changelog ==
 
+= 1.1 =
+* Better checking to make sure the user id is valid has now been implemented. If not valid then it uses data from the current user.
+* Most functions now use better and more accurate functions to grab information
+* Image and url functions now work better and have methods of showing the url in a customizable method
+* New parameters for the profile image shortcode such as height, width, and show = yes to show the image as html instead of just the link.
+* New parameters for the profile url such as show = yes that will show the link instead of just the url, before = and after = to add text or html before or after whatever is outputted, and profile_page = to set which page of the profile to provide the link for
+* More functions to come!
+
 = 1.0 =
 * Initial version
 
@@ -85,6 +99,14 @@ Feel free to contact our support through [Extend.BT4.ME](http://Extend.BT4.ME/ "
 There are no screenshots at this time, as it can appear differently for anyone that uses the shortcodes.
 
 == Upgrade Notice ==
+
+= 1.1 =
+* Better checking to make sure the user id is valid has now been implemented. If not valid then it uses data from the current user.
+* Most functions now use better and more accurate functions to grab information
+* Image and url functions now work better and have methods of showing the url in a customizable method
+* New parameters for the profile image shortcode such as height, width, and show = yes to show the image as html instead of just the link.
+* New parameters for the profile url such as show = yes that will show the link instead of just the url, before = and after = to add text or html before or after whatever is outputted, and profile_page = to set which page of the profile to provide the link for
+* More functions to come!
 
 = 1.0 =
 * Initial version
